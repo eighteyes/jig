@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<!-- index.html — shell page for one jig.
+     Responsibilities:
+     - load the theme and the app module
+     - give the view one inline mount point, a status line and a key legend -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jig</title>
+  <link rel="stylesheet" href="/web/theme.css">
+</head>
+<body>
+  <main>
+    <h1 id="title">jig</h1>
+    <div class="meta"><span id="file"></span> · <span id="status" class="status">loading</span></div>
+    <section id="mount"></section>
+  </main>
+  <footer id="legend" class="legend" hidden></footer>
+  <script type="module" src="/web/app.mjs"></script>
+</body>
+</html>

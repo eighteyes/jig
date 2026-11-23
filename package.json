@@ -1,0 +1,9 @@
+{
+  "name": "jig",
+  "version": "0.1.0",
+  "description": "Ephemeral work surfaces for human judgment",
+  "type": "module",
+  "bin": { "jig": "bin/jig.mjs" },
+  "scripts": { "test": "node --test" },
+  "engines": { "node": ">=20" }
+}
