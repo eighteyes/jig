@@ -28,3 +28,10 @@ Repo: /Users/god/projects/ai-tooling/utils/jig. Read first: PLAN.md, web/format.
 - Run tests: `JIG_PLAYWRIGHT=/Users/god/.npm/_npx/e41f203b7505f1fb/node_modules/ node --test --test-timeout=20000 test/view-<type>.test.mjs`
 - Take a screenshot of each view after a few key presses (`page.screenshot` inside a test, or a scratch script in `.ai/tmp/`). Read it, and fix layout problems before you report.
 - Report in under 200 words: the files written, test counts, any shared change you need, and any original behaviour you dropped and why.
+
+## Lessons from wave 1
+
+- Write and read files with the Write, Edit, Read and Grep tools. Use Bash only to run `node --test` and screenshot scripts. Shell writes trigger permission prompts that land on Sean.
+- Call `css()` inside `mount()`, not at module level, so `summary()` still imports in Node.
+- Named keys bind with a Shift+ prefix: `'Shift+ArrowUp': 'move-up'`. Capital letters bind as `J` and `K`.
+- Views built so far are good references: kanban.mjs (lanes, inline input), rerank.mjs (reorder, SVG), venn.mjs (regions), compare.mjs (columns, section current()).
