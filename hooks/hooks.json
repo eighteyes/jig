@@ -1,0 +1,16 @@
+{
+  "description": "SessionStart hook that tells the agent to reach for a jig when the human must process information faster than prose allows.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.mjs\""
+          }
+        ]
+      }
+    ]
+  }
+}

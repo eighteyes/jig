@@ -1,0 +1,20 @@
+{
+  "name": "jig",
+  "owner": {
+    "name": "eighteyes"
+  },
+  "metadata": {
+    "description": "Ephemeral work surfaces for human judgment",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "jig",
+      "source": "./",
+      "description": "The /jig skill and CLI. A SessionStart hook tells the agent to open a jig as a side channel when the human must process more than prose carries well.",
+      "version": "0.1.0",
+      "category": "productivity",
+      "tags": ["jig", "decisions", "triage", "hooks"]
+    }
+  ]
+}
