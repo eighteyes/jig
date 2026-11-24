@@ -13,5 +13,5 @@
 - [x] wave 3: triage media, tag, gate, duel, tour, explore
 - [x] core review: 4 important + 9 minor fixed, 5 recorded as known gaps
 - [x] router: frameworks map + jig new
-- [ ] /jig skill
+- [x] /jig skill (drafted; ships later as a plugin, q22)
 - [ ] shape-board retirement (Sean confirms)

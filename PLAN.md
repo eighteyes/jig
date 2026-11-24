@@ -67,7 +67,7 @@ voice-explorer          explore     values fields, thresholds, in-page ranking
 3. Next: compose, transcript, graph, breadboard.
 4. Media last: triage media, tag, gate, duel, tour, explore.
 5. Router: decompose frameworks map to a type, its pre-filled labels and sections; `jig new <framework|type> FILE` writes the skeleton.
-6. The /jig skill: when to reach for a jig, how to pick a type, the run loop, how to read the result.
+6. The /jig skill: when to reach for a jig, how to pick a type, the run loop, how to read the result. Drafted in skills/jig/. It ships later as a Claude Code plugin (skill + bin); nothing is installed globally yet. (q22)
 7. Shape-board retires once Sean confirms jig covers his use.
 
 ## Not in this cut
