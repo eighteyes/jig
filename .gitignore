@@ -5,3 +5,5 @@ node_modules/
 .ai/tmp/shots/
 .ai/tmp/*.mjs
 .ai/tmp/*.log
+.ai/transcripts/
+.ai/cactus/
