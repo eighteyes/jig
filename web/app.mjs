@@ -7,7 +7,7 @@
 //
 // View contract: export function mount(el, ctx) where ctx is
 //   { jig, meta, save(jig), finish(jig), actions, legend(extra?) }
-// and mount returns { current(): item|null, render() }.
+// and mount returns { current(): item|section|null, render() } (anything with .fields).
 // A view mutates ctx.jig and calls save; finish sets status: done and releases the host.
 // With current() present, the app adds e (escalate) and c (inline note) for the current item.
 // A view may also export summary(jig) for type-specific keys in the JSON printed on finish.
@@ -120,7 +120,7 @@ async function main() {
     if (!it) return;
     const bar = $('notebar');
     const input = bar.querySelector('input');
-    bar.querySelector('span').textContent = `note on: ${it.text}`;
+    bar.querySelector('span').textContent = `note on: ${it.text ?? it.heading ?? ''}`;
     input.value = it.fields.note || '';
     bar.hidden = false;
     input.focus();
