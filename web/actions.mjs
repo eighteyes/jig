@@ -7,10 +7,15 @@
 
 export function createActions(target = document) {
   const handlers = new Map();   // name -> fn
+  const titles = new Map();     // name -> legend text
   const keys = new Map();       // key -> name
   const history = [];
 
-  function define(name, fn) { handlers.set(name, fn); return api; }
+  function define(name, fn, title) {
+    handlers.set(name, fn);
+    if (title) titles.set(name, title);
+    return api;
+  }
 
   function bind(map) {
     for (const [key, name] of Object.entries(map)) keys.set(String(key), name);
@@ -47,7 +52,16 @@ export function createActions(target = document) {
     bind,
     run,
     undo,
-    bindings: () => [...keys.entries()].map(([key, name]) => ({ key, name })),
+    bindings: () => [...keys.entries()].map(([key, name]) => ({ key, name, title: titles.get(name) ?? name })),
+    /** Bindings grouped by action, in bind order: [{ keys: [..], name, title }]. */
+    legend: () => {
+      const by = new Map();
+      for (const [key, name] of keys) {
+        if (!by.has(name)) by.set(name, { keys: [], name, title: titles.get(name) ?? name });
+        by.get(name).keys.push(key);
+      }
+      return [...by.values()];
+    },
     dispose: () => target.removeEventListener('keydown', onKey),
   };
   return api;
