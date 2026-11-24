@@ -39,6 +39,10 @@ function drawLegend(actions, extra = []) {
     span.append(title);
     return span;
   }));
+  // A wrapped legend grows: keep the page and the note bar clear of it.
+  const h = el.hidden ? 0 : el.offsetHeight;
+  document.querySelector('main').style.paddingBottom = `${h + 80}px`;
+  $('notebar').style.bottom = `${h}px`;
 }
 
 function showDone(mount) {
