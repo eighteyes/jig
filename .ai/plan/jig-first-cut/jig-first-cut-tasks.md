@@ -14,4 +14,4 @@
 - [x] core review: 4 important + 9 minor fixed, 5 recorded as known gaps
 - [x] router: frameworks map + jig new
 - [x] /jig skill (drafted; ships later as a plugin, q22)
-- [ ] shape-board retirement (Sean confirms)
+- [x] shape-board retirement (Sean confirms) (link trashed, q28)
