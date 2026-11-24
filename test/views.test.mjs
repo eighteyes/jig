@@ -2,7 +2,7 @@
 // Responsibilities:
 // - matrix: keys move cards between quadrants and the pile, undo restores
 // - triage: keys label and advance, undo restores, Enter finishes
-// - shared keys: e escalates, c writes an inline note
+// - shared keys: e escalates, i inserts an inline note
 // Skips when Playwright is not available (set JIG_PLAYWRIGHT to a dir that has it).
 
 import { test, after } from 'node:test';
@@ -50,7 +50,7 @@ test('triage: label, undo, escalate, note, finish', { skip }, async () => {
     await press('1', '2', 'u', 'e');
     let t = await read();
     assert.match(t, /- \[accept\] one\n- two\n  escalate:: true\n- three/);
-    await press('c');
+    await press('i');
     await page.keyboard.type('ask Sean');
     await press('Enter');
     t = await read();

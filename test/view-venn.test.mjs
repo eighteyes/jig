@@ -30,7 +30,7 @@ sets: {a: fast, b: cheap}
 
 test('venn: place, undo, arm, finish', { skip }, async () => {
   await withJig(VENN, async ({ page, press, read, errors, host }) => {
-    await press('a', 'b', 'u', 'i');
+    await press('a', 'b', 'u', 'o');
     let t = await read();
     assert.match(t, /## fast only\n- x\n## cheap only\n## Both\n- y\n## Neither\n## Unsorted\n- z/);
     await press('n', 'Tab');

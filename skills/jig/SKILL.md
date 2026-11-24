@@ -44,7 +44,7 @@ Optional intro, shown above the view.
   free note line
 ```
 
-Every view shares two keys: `e` escalates the focused thing, and `c` writes a note on it. `u` undoes, and Enter finishes.
+Every view shares two keys: `e` escalates the focused thing, and `i` inserts a note on it. `u` undoes, and Enter finishes.
 
 ## Types
 
@@ -52,7 +52,7 @@ Every view shares two keys: `e` escalates the focused thing, and `c` writes a no
 decide
   triage      one card at a time, one key per decision; media, multi-label
   matrix      2x2 + Unsorted pile; 1-4 place, 0 unplace
-  venn        two sets: a, b, i (both), n (neither)
+  venn        two sets: a, b, o (both), n (neither)
   kanban      ## lanes, Inbox first; 0-N move, d done, x delete, n add
   qa          ## question, items = choices; 1-9 pick, w custom answer
   exec        commands to approve or reject; nothing runs from the page

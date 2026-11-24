@@ -23,7 +23,7 @@
 
 const DEFAULT_ACTIONS = { 1: 'accept', 2: 'reject', 3: 'later' };
 const UNUSABLE = 'unusable';
-const RESERVED = new Set(['u', 'Enter', 'ArrowLeft', 'ArrowRight', 'j', 'k', 'x', '0', 'e', 'c', ' ', ',', '.', '[', ']']);
+const RESERVED = new Set(['u', 'Enter', 'ArrowLeft', 'ArrowRight', 'j', 'k', 'x', '0', 'e', 'i', ' ', ',', '.', '[', ']']);
 
 import { el, css, badges } from '../web/ui.mjs';
 import { createMedia, defineMedia } from './_media.mjs';

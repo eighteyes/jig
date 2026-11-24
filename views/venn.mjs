@@ -1,7 +1,7 @@
 // venn.mjs — two-set Venn sort: place each card in A only, B only, both, or neither.
 // Responsibilities:
 // - draw a two-circle SVG with a count per region, then each region's cards, then the Unsorted pile
-// - keys: j/k or arrows pick a card, Tab next non-empty region, a/b/i/n place it, 0 back to Unsorted, u undo
+// - keys: j/k or arrows pick a card, Tab next non-empty region, a/b/o/n place it (o = both), 0 back to Unsorted, u undo
 // - Enter finishes; the first Enter arms a warning when Unsorted is not empty
 // - create missing region sections on mount from frontmatter `sets`
 // - summary(jig): items per region, runs in Node
@@ -192,7 +192,7 @@ export function mount(root, ctx) {
     return ctx.finish();
   }, 'finish');
   actions.bind({
-    a: 'move:0', b: 'move:1', i: 'move:2', n: 'move:3', 0: 'move:4',
+    a: 'move:0', b: 'move:1', o: 'move:2', n: 'move:3', 0: 'move:4',
     j: 'down', ArrowDown: 'down', k: 'up', ArrowUp: 'up', Tab: 'area',
     u: 'undo', Enter: 'finish',
   });

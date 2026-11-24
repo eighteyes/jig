@@ -33,7 +33,7 @@ key:: value          section field
 
 - `label` is the item's main decision (accept, a quadrant, approve).
 - Fields hold everything else: `note`, `escalate`, `tags`, `audio`, `img`, `video`, scores.
-- Every view gets the same two keys: `e` escalates and `c` adds a note. The note opens as an inline field, never a prompt dialog.
+- Every view gets the same two keys: `e` escalates and `i` inserts a note. The note opens as an inline field, never a prompt dialog.
 
 ## Board → jig type
 
@@ -62,7 +62,7 @@ voice-explorer          explore     values fields, thresholds, in-page ranking
 
 ## Build
 
-1. Shared pieces: item and section fields in the format, shared `e`/`c` keys with inline notes, the JSON summary, a headless browser test helper.
+1. Shared pieces: item and section fields in the format, shared `e`/`i` keys with inline notes, the JSON summary, a headless browser test helper.
 2. Port in waves, decision shapes first: qa, compare, score, rank, rerank, kanban, venn, exec.
 3. Next: compose, transcript, graph, breadboard.
 4. Media last: triage media, tag, gate, duel, tour, explore.
@@ -94,7 +94,7 @@ Judge coverage against this list (q23).
 - **grid-board:** the all-rows table. triage shows one card at a time, with no `meta` display columns, no `flags` columns, no `f` fields panel and no per-row `options` wording. Kept: media, multi-label, unusable, clear.
 - **tag-board:** `x` keeps a row's tags (the original cleared them); no `new_tags` in the result.
 - **path-board:** the fork list (`forkFrom`, `head.forks`).
-- **matrix-board (score):** per-cell notes. `c` notes the whole option.
+- **matrix-board (score):** per-cell notes. `i` notes the whole option.
 - **kanban-board:** the detail overlay (notes show inline on space); the card fields `id`, `detail`, `project`, `due`, `priority`; the owner key moved from `a` to `o`.
 - **fragment-board (compose) and transcript-board:** Backspace as undo. In transcript, space expands instead of marking.
 - **duel-board:** more-audio mode, cohort pairing (`g`), source clips (`o`), per-card tags and weak flags.

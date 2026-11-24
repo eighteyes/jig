@@ -9,7 +9,7 @@
 //   { jig, meta, save(jig), finish(jig), actions, legend(extra?) }
 // and mount returns { current(): item|section|null, render() } (anything with .fields).
 // A view mutates ctx.jig and calls save; finish sets status: done and releases the host.
-// With current() present, the app adds e (escalate) and c (inline note) for the current item.
+// With current() present, the app adds e (escalate) and i (insert a note, inline) for the current item.
 // A view may also export summary(jig) for type-specific keys in the JSON printed on finish.
 
 import { parseJig, writeJig, setField } from './format.mjs';
@@ -108,7 +108,7 @@ async function main() {
   const current = () => handle.current?.() ?? null;
   const rerender = () => handle.render?.();
 
-  // Shared on every view: e escalates the current item, c writes a note on it.
+  // Shared on every view: e escalates the current item, i inserts a note on it.
   if (handle.current) {
     actions.define('escalate', async () => {
       const it = current();
@@ -127,7 +127,7 @@ async function main() {
     const taken = new Set(actions.legend().flatMap((g) => g.keys));
     const extra = {};
     if (!taken.has('e')) extra.e = 'escalate';
-    if (!taken.has('c')) extra.c = 'note';
+    if (!taken.has('i')) extra.i = 'note';
     actions.bind(extra);
   }
 
