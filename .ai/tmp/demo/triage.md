@@ -1,10 +1,10 @@
 ---
 jig: triage
-title: Triage the issues
 actions: {1: accept, 2: reject, 3: later}
+multi: false
 ---
-- crash on empty input
-- add dark mode toggle
-  already dark, ask what they mean
-- [accept] docs typo
-- slow startup on cold cache
+- plain card, no media
+- image card
+  img:: shot-1.png, shot-2.png
+- clip card
+  audio:: clip.wav

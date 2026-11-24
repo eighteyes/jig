@@ -18,7 +18,7 @@ export async function loadRouter() {
 /** Types that have a view module. */
 export async function listTypes() {
   const files = await fs.readdir(path.join(ROOT, 'views'));
-  return files.filter((f) => f.endsWith('.mjs')).map((f) => f.slice(0, -4)).sort();
+  return files.filter((f) => f.endsWith('.mjs') && !f.startsWith('_')).map((f) => f.slice(0, -4)).sort();
 }
 
 /** Where items go, by type: the section heading to put them under, or null for a flat list. */
