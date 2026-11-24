@@ -54,7 +54,7 @@ function parseArgs(argv) {
     if (a === '--no-open') args.open = false;
     else if (a === '--title') args.title = argv[++i];
     else if (a === '--media') args.media = argv[++i];
-    else if (a === '--items') args.items = argv[++i].split(';');
+    else if (a === '--items') args.items = (argv[++i] ?? '').split(';');
     else if (a === '--stdin') args.stdin = true;
     else if (a === '--force') args.force = true;
     else if (args.cmd === 'new' && !args.name) args.name = a;

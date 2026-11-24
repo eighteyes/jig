@@ -64,7 +64,35 @@ test('serves media beside the jig, with ranges, and refuses escapes', async () =
     assert.equal(part.status, 206);
     assert.equal(await part.text(), '234');
     const out = await fetch(host.url + 'media/..%2f..%2fetc%2fpasswd');
-    assert.equal(out.status, 403);
+    assert.ok([403, 404].includes(out.status), `escape refused, got ${out.status}`);
+  } finally {
+    host.close();
+  }
+});
+
+test('refuses other hosts, cross-site writes and symlink escapes', async () => {
+  const http = await import('node:http');
+  const file = await tmpJig('secret');
+  const dir = path.dirname(file);
+  const outside = await fs.mkdtemp(path.join(os.tmpdir(), 'jig-out-'));
+  await fs.writeFile(path.join(outside, 'o.txt'), 'outside');
+  await fs.symlink(path.join(outside, 'o.txt'), path.join(dir, 'link.mp3'));
+  await fs.writeFile(path.join(dir, 'empty.wav'), '');
+  const host = await startHost(file);
+  const port = new URL(host.url).port;
+  const raw = (method, p, headers) => new Promise((resolve) => {
+    const req = http.request({ host: '127.0.0.1', port, method, path: p, headers }, (res) => { res.resume(); resolve(res.statusCode); });
+    req.end(method === 'PUT' ? 'pwned' : undefined);
+  });
+  try {
+    assert.equal(await raw('GET', '/api/jig', { host: 'evil.example' }), 421);
+    assert.equal(await raw('PUT', '/api/jig', { host: `127.0.0.1:${port}`, origin: 'http://evil.example' }), 403);
+    assert.equal(await raw('POST', '/api/done', { host: `127.0.0.1:${port}`, 'sec-fetch-site': 'cross-site' }), 403);
+    assert.equal(await fs.readFile(file, 'utf8'), 'secret');
+    assert.equal((await fetch(host.url + 'media/link.mp3')).status, 403);
+    const empty = await fetch(host.url + 'media/empty.wav');
+    assert.equal(empty.status, 200);
+    assert.equal(await empty.text(), '');
   } finally {
     host.close();
   }

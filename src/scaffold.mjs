@@ -63,6 +63,6 @@ export async function scaffold(name, opts = {}) {
     flat.items.push(...items.map((t) => newItem(t)));
     sections.push(flat);
   }
-  const intro = fw ? `${fw.name}: ${fw.why}.\n` : '';
+  const intro = fw ? `${fw.name}: ${fw.why}.\n` : null;
   return writeJig({ meta, intro, sections }) + '\n';
 }

@@ -22,10 +22,16 @@ const FENCE = '---';
 
 function splitTop(s, sep) {
   const out = [];
-  let depth = 0, quote = null, cur = '';
+  let depth = 0, quote = null, cur = '', esc = false;
   for (const ch of s) {
-    if (quote) { cur += ch; if (ch === quote) quote = null; continue; }
-    if (ch === '"' || ch === "'") { quote = ch; cur += ch; continue; }
+    if (quote) {
+      cur += ch;
+      if (esc) esc = false;
+      else if (ch === '\\' && quote === '"') esc = true;
+      else if (ch === quote) quote = null;
+      continue;
+    }
+    if ((ch === '"' || ch === "'") && /(^|[\s,{[:])$/.test(cur.slice(-1) || '')) { quote = ch; cur += ch; continue; }
     if (ch === '{' || ch === '[') depth++;
     if (ch === '}' || ch === ']') depth--;
     if (ch === sep && depth === 0) { out.push(cur); cur = ''; continue; }
@@ -36,11 +42,16 @@ function splitTop(s, sep) {
 }
 
 function splitKey(s) {
-  let quote = null;
+  let quote = null, esc = false;
   for (let i = 0; i < s.length; i++) {
     const ch = s[i];
-    if (quote) { if (ch === quote) quote = null; continue; }
-    if (ch === '"' || ch === "'") { quote = ch; continue; }
+    if (quote) {
+      if (esc) esc = false;
+      else if (ch === '\\' && quote === '"') esc = true;
+      else if (ch === quote) quote = null;
+      continue;
+    }
+    if ((ch === '"' || ch === "'") && (i === 0 || /\s/.test(s[i - 1]))) { quote = ch; continue; }
     if (ch === ':' && (i + 1 === s.length || s[i + 1] === ' ')) return [s.slice(0, i).trim(), s.slice(i + 1).trim()];
   }
   return null;
@@ -60,14 +71,14 @@ export function parseScalar(raw) {
   if (s.startsWith('[') && s.endsWith(']')) return splitTop(s.slice(1, -1), ',').map(parseScalar);
   if (/^(true|false)$/.test(s)) return s === 'true';
   if (/^(null|~)$/.test(s)) return null;
-  if (/^-?\d+(\.\d+)?$/.test(s)) return Number(s);
+  if (/^-?\d+(\.\d+)?$/.test(s) && String(Number(s)) === s) return Number(s);
   return unquote(s);
 }
 
 function unquote(s) {
   if (s.length >= 2 && (s[0] === '"' || s[0] === "'") && s[s.length - 1] === s[0]) {
     const inner = s.slice(1, -1);
-    return s[0] === '"' ? inner.replace(/\\"/g, '"').replace(/\\\\/g, '\\') : inner.replace(/''/g, "'");
+    return s[0] === '"' ? inner.replace(/\\(["\\n])/g, (_, c) => (c === 'n' ? '\n' : c)) : inner.replace(/''/g, "'");
   }
   return s;
 }
@@ -80,7 +91,8 @@ export function parseYaml(text) {
     if (!line.trim() || line.trim().startsWith('#') || /^\s/.test(line)) continue;
     const kv = splitKey(line);
     if (!kv) continue;
-    const [key, rest] = kv;
+    const [key, raw] = kv;
+    const rest = /^["']/.test(raw) ? raw : raw.replace(/\s+#.*$/, '');
     if (rest !== '') { out[unquote(key)] = parseScalar(rest); continue; }
     // block value: indented lines that follow
     const block = [];
@@ -100,7 +112,7 @@ export function parseYaml(text) {
 }
 
 function needsQuote(s) {
-  return s === '' || /^[\s{[\]}'"#&*!|>%@`-]/.test(s) || /[:#,{}[\]]/.test(s) || /\s$/.test(s)
+  return s === '' || /^[\s{[\]}'"#&*!|>%@`-]/.test(s) || /[:#,{}[\]"'\n\\]/.test(s) || /\s$/.test(s)
     || /^(true|false|null|~|-?\d+(\.\d+)?)$/.test(s);
 }
 
@@ -110,7 +122,7 @@ export function writeScalar(v) {
   if (Array.isArray(v)) return `[${v.map(writeScalar).join(', ')}]`;
   if (typeof v === 'object') return `{${Object.entries(v).map(([k, x]) => `${writeKey(k)}: ${writeScalar(x)}`).join(', ')}}`;
   const s = String(v);
-  return needsQuote(s) ? `"${s.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"` : s;
+  return needsQuote(s) ? `"${s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')}"` : s;
 }
 
 function writeKey(k) { return /^[\w.-]+$/.test(k) ? k : writeScalar(String(k)); }
@@ -182,7 +194,7 @@ export function parseBody(body) {
         }
       }
       phase = 'items';
-      cur.items.push(newItem(m[2], m[1] ?? null));
+      cur.items.push(newItem(m[2], m[1] === undefined || m[1] === '' ? null : m[1]));
       continue;
     }
     if (!cur) { intro.push(line); continue; }
@@ -190,7 +202,7 @@ export function parseBody(body) {
       const it = cur.items[cur.items.length - 1];
       const inner = line.replace(/^\s{1,4}/, '');
       const f = inner.match(FIELD);
-      if (f && !it.note.length) it.fields[f[1]] = f[2];
+      if (f && !it.note.length && !(f[1] in it.fields)) it.fields[f[1]] = f[2];
       else it.note.push(inner);
       continue;
     }
@@ -205,11 +217,14 @@ export function parseBody(body) {
   }
   // A section with no items: its text sits where `after` would, so items added later go above it.
   for (const sec of sections) if (!sec.items.length && sec.text.length) { sec.after = [...sec.text, ...sec.after]; sec.text = []; }
-  return { intro: intro.join('\n'), sections };
+  return { intro: intro.join('\n'), hasIntro: intro.length > 0, sections };
 }
 
 export function writeItem(it) {
-  const out = [`- ${it.label !== null && it.label !== undefined && it.label !== '' ? `[${it.label}] ` : ''}${it.text}`];
+  const labelled = it.label !== null && it.label !== undefined && it.label !== '';
+  // Text that itself starts with [..] gets an empty label so it does not read back as one.
+  const prefix = labelled ? `[${it.label}] ` : (/^\[[^\]]*\] /.test(it.text) ? '[] ' : '');
+  const out = [`- ${prefix}${it.text}`];
   for (const [k, v] of Object.entries(it.fields || {})) {
     if (v === undefined || v === null) continue;
     out.push(`  ${k}:: ${v}`);
@@ -219,11 +234,11 @@ export function writeItem(it) {
   return out;
 }
 
-export function writeBody({ intro, sections }) {
+export function writeBody({ intro, sections, hasIntro = false }) {
   const out = [];
-  if (intro) out.push(intro);
+  if (intro !== null && intro !== undefined && (intro !== '' || hasIntro)) out.push(intro);
   for (const s of sections) {
-    if (s.heading) out.push(`${'#'.repeat(s.level || 2)} ${s.heading}`);
+    if (s.heading !== null && s.heading !== undefined) out.push(`${'#'.repeat(s.level || 2)} ${s.heading}`);
     for (const [k, v] of Object.entries(s.fields || {})) if (v !== undefined && v !== null) out.push(`${k}:: ${v}`);
     out.push(...(s.text || []));
     for (const it of s.items) out.push(...writeItem(it));
@@ -239,9 +254,9 @@ export function parseJig(text) {
 }
 
 /** Write a whole jig file. */
-export function writeJig({ meta, intro, sections }) {
+export function writeJig({ meta, intro, sections, hasIntro }) {
   const head = meta && Object.keys(meta).length ? `${FENCE}\n${writeYaml(meta)}\n${FENCE}\n` : '';
-  return head + writeBody({ intro, sections });
+  return head + writeBody({ intro, sections, hasIntro });
 }
 
 /** Every item across sections, with its section heading. */

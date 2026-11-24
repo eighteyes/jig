@@ -21,30 +21,49 @@ const TYPES = {
   '.mp4': 'video/mp4', '.webm': 'video/webm', '.mov': 'video/quicktime',
 };
 
-/** Serve one file under `root`, honouring a single byte range. */
+/** Serve one file under `root`, honouring a single byte range. Symlinks may not leave root. */
 async function serveMedia(req, res, root, rel) {
-  const target = path.resolve(root, rel);
-  if (target !== root && !target.startsWith(root + path.sep)) return send(res, 403, 'forbidden');
-  let stat;
-  try { stat = await fs.stat(target); } catch { return send(res, 404, 'not found'); }
-  if (!stat.isFile()) return send(res, 404, 'not found');
+  let realRoot, target;
+  try {
+    realRoot = await fs.realpath(root);
+    target = await fs.realpath(path.resolve(root, rel));
+  } catch { return send(res, 404, 'not found'); }
+  if (target !== realRoot && !target.startsWith(realRoot === path.sep ? realRoot : realRoot + path.sep)) return send(res, 403, 'forbidden');
+  if (path.basename(target).startsWith('.')) return send(res, 403, 'forbidden');
+  let fh;
+  try { fh = await fs.open(target); } catch { return send(res, 404, 'not found'); }
+  const stat = await fh.stat();
+  if (!stat.isFile()) { await fh.close(); return send(res, 404, 'not found'); }
   const type = TYPES[path.extname(target).toLowerCase()] || 'application/octet-stream';
+  if (stat.size === 0) {
+    await fh.close();
+    res.writeHead(200, { 'content-type': type, 'content-length': 0, 'cache-control': 'no-store' });
+    return res.end();
+  }
   const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || '');
   let start = 0, end = stat.size - 1, code = 200;
   if (range && (range[1] || range[2])) {
     if (range[1]) { start = Number(range[1]); if (range[2]) end = Math.min(Number(range[2]), end); }
     else start = Math.max(stat.size - Number(range[2]), 0);
-    if (start > end) { res.writeHead(416, { 'content-range': `bytes */${stat.size}` }); return res.end(); }
+    if (start > end) { await fh.close(); res.writeHead(416, { 'content-range': `bytes */${stat.size}` }); return res.end(); }
     code = 206;
   }
   const head = { 'content-type': type, 'accept-ranges': 'bytes', 'content-length': end - start + 1, 'cache-control': 'no-store' };
   if (code === 206) head['content-range'] = `bytes ${start}-${end}/${stat.size}`;
   res.writeHead(code, head);
-  const fh = await fs.open(target);
   const stream = fh.createReadStream({ start, end });
   stream.on('close', () => fh.close().catch(() => {}));
+  stream.on('error', () => res.destroy());
   stream.pipe(res);
 }
+
+/** Write a file by temp file and rename, so a crash never leaves it half written. */
+async function writeAtomic(file, text) {
+  const tmp = path.join(path.dirname(file), `.${path.basename(file)}.${process.pid}.tmp`);
+  await fs.writeFile(tmp, text);
+  await fs.rename(tmp, file);
+}
+
 const MAX_BODY = 8 * 1024 * 1024;
 
 function send(res, code, body, type = 'text/plain') {
@@ -95,8 +114,14 @@ export async function startHost(jigPath, opts = {}) {
   let finish;
   const done = new Promise((r) => { finish = r; });
 
+  let origin = null; // set once listening: http://127.0.0.1:<port>
+
   const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, 'http://localhost');
+    // Only this host's own page may talk to it: blocks DNS rebinding (Host) and cross-site writes (Origin).
+    if (req.headers.host !== origin.slice('http://'.length)) return send(res, 421, 'wrong host');
+    if (req.method !== 'GET' && req.headers.origin !== undefined && req.headers.origin !== origin) return send(res, 403, 'wrong origin');
+    if (req.method !== 'GET' && req.headers['sec-fetch-site'] && !['same-origin', 'none'].includes(req.headers['sec-fetch-site'])) return send(res, 403, 'cross-site');
     try {
       if (url.pathname === '/' && req.method === 'GET') {
         return send(res, 200, await fs.readFile(path.join(ROOT, 'web', 'index.html')), 'text/html');
@@ -107,7 +132,7 @@ export async function startHost(jigPath, opts = {}) {
       }
       if (url.pathname === '/api/jig' && req.method === 'PUT') {
         const text = await readBody(req);
-        await fs.writeFile(file, text);
+        await writeAtomic(file, text);
         opts.onSave?.(text);
         return send(res, 204, '');
       }
@@ -117,12 +142,13 @@ export async function startHost(jigPath, opts = {}) {
         return;
       }
       if (url.pathname.startsWith('/media/') && req.method === 'GET') {
-        return serveMedia(req, res, path.resolve(opts.media ?? path.dirname(file)), decodeURIComponent(url.pathname.slice('/media/'.length)));
+        return await serveMedia(req, res, path.resolve(opts.media ?? path.dirname(file)), decodeURIComponent(url.pathname.slice('/media/'.length)));
       }
-      if (req.method === 'GET') return serveStatic(res, url.pathname);
+      if (req.method === 'GET') return await serveStatic(res, url.pathname);
       return send(res, 405, 'method not allowed');
     } catch (err) {
-      return send(res, 500, String(err.message || err));
+      if (!res.headersSent) return send(res, 500, String(err.message || err));
+      res.destroy();
     }
   });
 
@@ -131,5 +157,6 @@ export async function startHost(jigPath, opts = {}) {
     server.listen(opts.port ?? 0, '127.0.0.1', resolve);
   });
   const { port } = server.address();
-  return { url: `http://127.0.0.1:${port}/`, done, close: () => { server.close(); server.closeAllConnections(); } };
+  origin = `http://127.0.0.1:${port}`;
+  return { url: `${origin}/`, done, close: () => { server.close(); server.closeAllConnections(); } };
 }

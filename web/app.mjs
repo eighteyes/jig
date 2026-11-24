@@ -80,19 +80,26 @@ async function main() {
   async function save(next = jig) {
     const body = writeJig(next);
     setStatus('saving');
-    pending = pending.then(() => fetch('/api/jig', { method: 'PUT', body }));
-    const r = await pending;
-    if (r.ok) setStatus('saved', 'saved'); else setStatus(`save failed: ${r.status}`, 'error');
-    return r.ok;
+    // One failed save must not poison the queue: each save runs after the last settles.
+    const run = pending.catch(() => {}).then(() => fetch('/api/jig', { method: 'PUT', body }));
+    pending = run;
+    try {
+      const r = await run;
+      if (r.ok) setStatus('saved', 'saved'); else setStatus(`save failed: ${r.status}`, 'error');
+      return r.ok;
+    } catch (err) {
+      setStatus(`save failed: ${err.message || err}`, 'error');
+      return false;
+    }
   }
 
   async function finish(next = jig) {
+    const before = next.meta.status;
     next.meta.status = 'done';
-    if (await save(next)) {
-      await fetch('/api/done', { method: 'POST' });
-      actions.dispose();
-      showDone(mount);
-    }
+    if (!(await save(next))) { next.meta.status = before; return; }
+    await fetch('/api/done', { method: 'POST' });
+    actions.dispose();
+    showDone(mount);
   }
 
   const actions = createActions();

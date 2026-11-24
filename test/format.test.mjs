@@ -117,3 +117,14 @@ test('summarize lists labels, unlabelled and escalated items', async () => {
   assert.deepEqual(s.unlabelled, ['b']);
   assert.deepEqual(s.escalated, ['b']);
 });
+
+test('review fixes: quotes, numbers, comments, newlines, edge round trips', () => {
+  const y = parseYaml(['a: [it\'s, b]', 'b: {a: it\'s, b: x}', 'c: 007', 'd: 1.10', 'e: title # comment', 'f: 3'].join('\n'));
+  assert.deepEqual(y, { a: ["it's", 'b'], b: { a: "it's", b: 'x' }, c: '007', d: '1.10', e: 'title', f: 3 });
+  const w = { s: 'line\nbreak', q: 'say "hi"', n: '007' };
+  assert.deepEqual(parseYaml(writeYaml(w)), w);
+  for (const t of ['---\njig: x\n---\n\n## A\n- a\n', '## \n- a\n', '- [] [x] y\n', '- a\n  tag:: 1\n  tag:: 2\n']) {
+    assert.equal(writeJig(parseJig(t)), t);
+  }
+  assert.equal(parseJig('- [] [x] y').sections[0].items[0].label, null);
+});
