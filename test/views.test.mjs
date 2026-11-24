@@ -3,6 +3,7 @@
 // - matrix: keys move cards between quadrants and the pile, undo restores
 // - triage: keys label and advance, undo restores, Enter finishes
 // - shared keys: e escalates, i inserts an inline note
+// - legend keys are tap targets: clicking one runs its action
 // Skips when Playwright is not available (set JIG_PLAYWRIGHT to a dir that has it).
 
 import { test, after } from 'node:test';
@@ -59,6 +60,18 @@ test('triage: label, undo, escalate, note, finish', { skip }, async () => {
     t = await host.done;
     assert.match(t, /status: done/);
     assert.match(t, /- \[reject\] two/);
+    assert.deepEqual(errors, []);
+  });
+});
+
+test('legend: tapping a key runs its action, undo included', { skip }, async () => {
+  await withJig(MATRIX, async ({ page, read, errors }) => {
+    const tap = async (label) => { await page.locator('#legend .key', { hasText: new RegExp(`^${label}$`) }).first().click(); await page.waitForTimeout(150); };
+    await tap('1');
+    await tap('3');
+    assert.match(await read(), /## Do\n- a\n## Schedule\n## Delegate\n- b\n/);
+    await tap('u');
+    assert.match(await read(), /## Delegate\n## Drop\n## Unsorted\n- b\n- c/);
     assert.deepEqual(errors, []);
   });
 });

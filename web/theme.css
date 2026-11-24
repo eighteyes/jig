@@ -38,7 +38,9 @@ button:focus-visible, .card:focus-visible { outline: 2px solid var(--accent); ou
 .card.active { border-color: var(--accent); }
 
 .legend { position: fixed; bottom: 0; left: 0; right: 0; background: var(--panel); border-top: 1px solid var(--edge); padding: 8px 20px; display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--dim); }
-.legend kbd { color: var(--ink); background: var(--raised); border: 1px solid var(--edge); border-radius: 4px; padding: 0 6px; margin-right: 4px; }
+.legend .key { font: inherit; font-family: var(--mono); font-size: 13px; color: var(--ink); background: var(--raised); border: 1px solid var(--edge); border-radius: 4px; padding: 0 6px; margin-right: 4px; cursor: pointer; touch-action: manipulation; }
+.legend .key:active { background: var(--edge); }
+@media (pointer: coarse) { .legend { gap: 10px 16px; } .legend .key { min-width: 36px; min-height: 36px; padding: 0 10px; font-size: 15px; } }
 
 details { background: var(--panel); border: 1px solid var(--edge); border-radius: var(--r); padding: 8px 12px; }
 details > summary { cursor: pointer; color: var(--dim); }

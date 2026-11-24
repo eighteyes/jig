@@ -25,6 +25,22 @@ function setStatus(text, cls = '') {
 
 const KEY_NAMES = { ' ': 'space', ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→', Enter: '⏎', Tab: 'tab', Escape: 'esc', 'Shift+ArrowUp': '⇧↑', 'Shift+ArrowDown': '⇧↓', 'Shift+ArrowLeft': '⇧←', 'Shift+ArrowRight': '⇧→' };
 
+/** A legend key cap that also works as a tap target: it replays the key, so every handler sees it. */
+function keyButton(key) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'key';
+  b.tabIndex = -1; // never takes focus, so Enter and space keep going to the view
+  b.textContent = KEY_NAMES[key] ?? key;
+  b.addEventListener('mousedown', (e) => e.preventDefault());
+  b.addEventListener('click', () => {
+    const shift = key.startsWith('Shift+');
+    const k = shift ? key.slice('Shift+'.length) : key;
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: k, shiftKey: shift || (k.length === 1 && k !== k.toLowerCase()), bubbles: true, cancelable: true }));
+  });
+  return b;
+}
+
 function drawLegend(actions, extra = []) {
   const el = $('legend');
   // An action titled '' folds its keys into the entry before it (1 2 3 … pick).
@@ -36,11 +52,7 @@ function drawLegend(actions, extra = []) {
   el.hidden = groups.length === 0;
   el.replaceChildren(...groups.map(({ keys, title }) => {
     const span = document.createElement('span');
-    for (const key of keys) {
-      const kbd = document.createElement('kbd');
-      kbd.textContent = KEY_NAMES[key] ?? key;
-      span.append(kbd);
-    }
+    for (const key of keys) span.append(keyButton(key));
     span.append(title);
     return span;
   }));
