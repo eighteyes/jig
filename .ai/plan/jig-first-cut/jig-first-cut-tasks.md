@@ -8,7 +8,7 @@
 - [x] shared e/c keys, inline note
 - [x] JSON summary on stdout (summarize hook)
 - [x] headless browser test helper
-- [ ] wave 1: qa, compare, score, rank, rerank, kanban, venn, exec
+- [x] wave 1: qa, compare, score, rank, rerank, kanban, venn, exec
 - [ ] wave 2: compose, transcript, graph, breadboard
 - [ ] wave 3: triage media, tag, gate, duel, tour, explore
 - [x] router: frameworks map + jig new

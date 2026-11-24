@@ -2,6 +2,7 @@
 // Responsibilities:
 // - views register actions by name; keys bind to names, not to handlers
 // - one keydown listener per page, ignored while typing in a field
+// - named keys bind with a Shift+ prefix (Shift+ArrowUp); printable keys bind by their character
 // - undo: each action may return an inverse, `undo` pops and runs it
 // - expose the binding list so the page can draw a key legend
 
@@ -39,7 +40,8 @@ export function createActions(target = document) {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const el = e.target;
     if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) return;
-    const name = keys.get(e.key);
+    // Named keys (arrows, Enter, Tab) take a Shift+ prefix; printable keys already differ by case.
+    const name = (e.shiftKey && e.key.length > 1 && keys.get(`Shift+${e.key}`)) || keys.get(e.key);
     if (!name) return;
     e.preventDefault();
     run(name);

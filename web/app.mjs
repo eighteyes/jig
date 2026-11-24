@@ -23,7 +23,7 @@ function setStatus(text, cls = '') {
   el.className = `status ${cls}`;
 }
 
-const KEY_NAMES = { ' ': 'space', ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→', Enter: '⏎', Tab: 'tab', Escape: 'esc' };
+const KEY_NAMES = { ' ': 'space', ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '←', ArrowRight: '→', Enter: '⏎', Tab: 'tab', Escape: 'esc', 'Shift+ArrowUp': '⇧↑', 'Shift+ArrowDown': '⇧↓', 'Shift+ArrowLeft': '⇧←', 'Shift+ArrowRight': '⇧→' };
 
 function drawLegend(actions, extra = []) {
   const el = $('legend');
