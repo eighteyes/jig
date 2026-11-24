@@ -5,6 +5,7 @@
 // - drag and drop a card between any two areas
 // - optional axis labels from frontmatter `axes: {x: ..., y: ...}`
 // - each move rewrites one line's place in the file and saves
+// - summary(): items by quadrant, the unsorted pile, the axes
 //
 // File:
 //   ---
@@ -149,4 +150,13 @@ export function mount(root, ctx) {
   });
   render();
   return { current: () => areas[focus.area].items[focus.index] ?? null, render };
+}
+
+/** JSON summary for `jig open`: items by quadrant. Pure: reads a copy of the layout. */
+export function summary(jig) {
+  const copy = { meta: jig.meta, sections: jig.sections.map((s) => ({ ...s, items: [...s.items] })) };
+  const { pile, quads } = layout(copy);
+  const by_quadrant = {};
+  for (const q of quads) by_quadrant[q.heading] = q.items.map((it) => it.text);
+  return { by_quadrant, unsorted: pile.items.map((it) => it.text), axes: jig.meta.axes ?? null };
 }

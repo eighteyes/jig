@@ -103,6 +103,12 @@ async function main() {
     process.stderr.write(USAGE + '\n');
     process.exit(args.cmd === 'help' ? 0 : 1);
   }
+  const current = await fs.readFile(args.file, 'utf8');
+  if (parseJig(current).meta.status === 'done') {
+    process.stderr.write('jig: already done; printing its summary\n');
+    process.stdout.write(JSON.stringify(await summaryOf(args.file, current), null, 2) + '\n');
+    return;
+  }
   const host = await startHost(args.file, { port: args.port, media: args.media ?? undefined });
   process.stderr.write(`jig: ${host.url}\n`);
   if (args.open) openUrl(host.url);

@@ -17,7 +17,7 @@ Tool: `~/projects/ai-tooling/utils/jig/bin/jig.mjs` (Node 20+, no install).
 - Options need weighing against criteria (score), or plans side by side (compare).
 - A named strategy framework fits. Run `jig list` to see the mapped ones.
 
-Use cactus or plain chat for a single yes/no.
+A single yes/no belongs in chat.
 
 ## Loop
 

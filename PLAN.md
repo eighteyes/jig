@@ -83,7 +83,23 @@ voice-explorer          explore     values fields, thresholds, in-page ranking
 - Fields on a section with no heading have nowhere to go. Views that annotate sections all use headed sections.
 - Note indents normalise to two spaces, and CRLF files save as LF.
 - `--media /` refuses everything. Point it at a real folder.
-- Dropped from shape-board: board-live (live depth), qa branch expansion, compare's fork list, duel's more-audio, cohort and source modes.
+- Mounting on slate later needs: the window-level key listeners in triage, tag and rerank removed on unmount, and the `/api/` and `/media/` paths made configurable.
+
+## Dropped from shape-board
+
+Judge coverage against this list (q23).
+
+- **Engine:** board-live and its live depth from `claude -p` (q15); remote key control (`/remote`, `/state`); `/checkpoint` autosave, replaced by save-on-every-action; `serve-static.sh` durable static boards; `make-pair-board.py` forced-choice pairs; SHAPE-demo.
+- **Q&A (board.html):** branch expansion (a parent question opening its children); the `x` growth request; frontier counts.
+- **grid-board:** the all-rows table. triage shows one card at a time, with no `meta` display columns, no `flags` columns, no `f` fields panel and no per-row `options` wording. Kept: media, multi-label, unusable, clear.
+- **tag-board:** `x` keeps a row's tags (the original cleared them); no `new_tags` in the result.
+- **path-board:** the fork list (`forkFrom`, `head.forks`).
+- **matrix-board (score):** per-cell notes. `c` notes the whole option.
+- **kanban-board:** the detail overlay (notes show inline on space); the card fields `id`, `detail`, `project`, `due`, `priority`; the owner key moved from `a` to `o`.
+- **fragment-board (compose) and transcript-board:** Backspace as undo. In transcript, space expands instead of marking.
+- **duel-board:** more-audio mode, cohort pairing (`g`), source clips (`o`), per-card tags and weak flags.
+- **voice-explorer (explore):** the save-reply contract; voice-specific keys (fry and the fixed stat line), now plain dimension settings; per-item `gateFail`.
+- **tour-board-standalone:** the on-screen result panel and copy button. The result goes to the file and stdout instead.
 
 ## Grade
 
