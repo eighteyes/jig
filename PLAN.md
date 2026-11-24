@@ -77,6 +77,14 @@ voice-explorer          explore     values fields, thresholds, in-page ranking
 - Mounting on slate (slate is spec only).
 - board-live's live depth.
 
+## Known gaps
+
+- Saving rewrites the frontmatter in canonical form: `#` comments drop, and block maps turn inline. The body keeps its form.
+- Fields on a section with no heading have nowhere to go. Views that annotate sections all use headed sections.
+- Note indents normalise to two spaces, and CRLF files save as LF.
+- `--media /` refuses everything. Point it at a real folder.
+- Dropped from shape-board: board-live (live depth), qa branch expansion, compare's fork list, duel's more-audio, cohort and source modes.
+
 ## Grade
 
 B+. The conventions and the first two views are proven. The risk is breadth: 18 views, and the media ones are large.

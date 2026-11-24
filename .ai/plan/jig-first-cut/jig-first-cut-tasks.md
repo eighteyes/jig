@@ -10,7 +10,8 @@
 - [x] headless browser test helper
 - [x] wave 1: qa, compare, score, rank, rerank, kanban, venn, exec
 - [x] wave 2: compose, transcript, graph, breadboard
-- [ ] wave 3: triage media, tag, gate, duel, tour, explore
+- [x] wave 3: triage media, tag, gate, duel, tour, explore
+- [x] core review: 4 important + 9 minor fixed, 5 recorded as known gaps
 - [x] router: frameworks map + jig new
 - [ ] /jig skill
 - [ ] shape-board retirement (Sean confirms)
