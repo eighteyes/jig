@@ -9,7 +9,7 @@
 - [x] JSON summary on stdout (summarize hook)
 - [x] headless browser test helper
 - [x] wave 1: qa, compare, score, rank, rerank, kanban, venn, exec
-- [ ] wave 2: compose, transcript, graph, breadboard
+- [x] wave 2: compose, transcript, graph, breadboard
 - [ ] wave 3: triage media, tag, gate, duel, tour, explore
 - [x] router: frameworks map + jig new
 - [ ] /jig skill
