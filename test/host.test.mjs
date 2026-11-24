@@ -48,3 +48,24 @@ test('refuses traversal out of the static roots', async () => {
     host.close();
   }
 });
+
+test('serves media beside the jig, with ranges, and refuses escapes', async () => {
+  const file = await tmpJig('x');
+  const dir = path.dirname(file);
+  await fs.mkdir(path.join(dir, 'clips'));
+  await fs.writeFile(path.join(dir, 'clips', 'a b.wav'), Buffer.from('0123456789'));
+  const host = await startHost(file);
+  try {
+    const all = await fetch(host.url + 'media/clips/a%20b.wav');
+    assert.equal(all.status, 200);
+    assert.equal(all.headers.get('content-type'), 'audio/wav');
+    assert.equal(await all.text(), '0123456789');
+    const part = await fetch(host.url + 'media/clips/a%20b.wav', { headers: { range: 'bytes=2-4' } });
+    assert.equal(part.status, 206);
+    assert.equal(await part.text(), '234');
+    const out = await fetch(host.url + 'media/..%2f..%2fetc%2fpasswd');
+    assert.equal(out.status, 403);
+  } finally {
+    host.close();
+  }
+});

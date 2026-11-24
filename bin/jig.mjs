@@ -33,13 +33,15 @@ export async function summaryOf(file, text) {
   return out;
 }
 
-const USAGE = `usage: jig open FILE [--port N] [--no-open]
+const USAGE = `usage: jig open FILE [--port N] [--no-open] [--media DIR]
        jig summary FILE
        jig new NAME FILE [--title T] [--items "a; b; c"] [--stdin] [--force]
        jig list
 
   open     Serves FILE in a local browser tab and waits until it is finished.
            The result is written into FILE; a JSON summary is printed on stdout.
+           Media fields (audio::, img::, video::) are served from FILE's folder,
+           or from --media DIR.
   summary  Prints the JSON summary of FILE as it stands.
   new      Writes a skeleton: NAME is a type (matrix, triage, ...) or a framework
            (eisenhower, moscow, rice, ...). Items come from --items or stdin lines.
@@ -51,6 +53,7 @@ function parseArgs(argv) {
     const a = argv[i];
     if (a === '--no-open') args.open = false;
     else if (a === '--title') args.title = argv[++i];
+    else if (a === '--media') args.media = argv[++i];
     else if (a === '--items') args.items = argv[++i].split(';');
     else if (a === '--stdin') args.stdin = true;
     else if (a === '--force') args.force = true;
@@ -100,7 +103,7 @@ async function main() {
     process.stderr.write(USAGE + '\n');
     process.exit(args.cmd === 'help' ? 0 : 1);
   }
-  const host = await startHost(args.file, { port: args.port });
+  const host = await startHost(args.file, { port: args.port, media: args.media ?? undefined });
   process.stderr.write(`jig: ${host.url}\n`);
   if (args.open) openUrl(host.url);
   process.on('SIGINT', () => { host.close(); process.exit(130); });

@@ -3,7 +3,8 @@
 // - el(): create an element with class and text
 // - badges(): the escalate flag and note line every item can carry
 // - css(): add a view's stylesheet once
-// - scrollIntoViewIfNeeded(): keep the focused card visible
+// - keepVisible(): keep the focused card visible
+// - mediaUrl(): a media field value as a URL (http(s) as is, else served from beside the jig file)
 
 export function el(tag, cls, text) {
   const e = document.createElement(tag);
@@ -35,4 +36,11 @@ export function keepVisible(node) {
   if (!node) return;
   const r = node.getBoundingClientRect();
   if (r.top < 0 || r.bottom > window.innerHeight - 60) node.scrollIntoView({ block: 'nearest' });
+}
+
+/** A media path from a field: URLs pass through, paths resolve beside the jig file. */
+export function mediaUrl(src) {
+  const s = String(src).trim();
+  if (/^(https?:|data:|blob:)/.test(s)) return s;
+  return '/media/' + s.replace(/^\.\//, '').split('/').map(encodeURIComponent).join('/');
 }
