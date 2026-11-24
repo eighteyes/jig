@@ -1,0 +1,597 @@
+{
+  "source": "~/projects/ai-tooling/skills/decompose/skills/decompose/atlas.md",
+  "note": "Frameworks with a drawable shape. The rest stay prose: use the decompose skill.",
+  "frameworks": [
+    {
+      "key": "eisenhower",
+      "name": "Eisenhower Matrix",
+      "family": "Decision / Prioritization",
+      "type": "matrix",
+      "meta": {
+        "axes": {
+          "x": "urgent",
+          "y": "important"
+        },
+        "quadrants": [
+          "Do",
+          "Schedule",
+          "Delegate",
+          "Drop"
+        ]
+      },
+      "sections": [],
+      "why": "sort tasks by urgency and importance"
+    },
+    {
+      "key": "swot",
+      "name": "SWOT",
+      "family": "Classics",
+      "type": "matrix",
+      "meta": {
+        "axes": {
+          "x": "helpful → harmful",
+          "y": "internal → external"
+        },
+        "quadrants": [
+          "Strengths",
+          "Weaknesses",
+          "Opportunities",
+          "Threats"
+        ]
+      },
+      "sections": [],
+      "why": "sort factors by helpful/harmful and internal/external"
+    },
+    {
+      "key": "growth-share",
+      "name": "Growth-Share Matrix (BCG)",
+      "family": "BCG lineage",
+      "type": "matrix",
+      "meta": {
+        "axes": {
+          "x": "relative market share",
+          "y": "market growth"
+        },
+        "quadrants": [
+          "Stars",
+          "Question Marks",
+          "Cash Cows",
+          "Dogs"
+        ]
+      },
+      "sections": [],
+      "why": "place businesses or products by share and growth"
+    },
+    {
+      "key": "ansoff",
+      "name": "Ansoff Matrix",
+      "family": "Classics",
+      "type": "matrix",
+      "meta": {
+        "axes": {
+          "x": "new products",
+          "y": "new markets"
+        },
+        "quadrants": [
+          "Market Penetration",
+          "Product Development",
+          "Market Development",
+          "Diversification"
+        ]
+      },
+      "sections": [],
+      "why": "sort growth moves by product and market newness"
+    },
+    {
+      "key": "advantage-matrix",
+      "name": "Advantage Matrix",
+      "family": "BCG lineage",
+      "type": "matrix",
+      "meta": {
+        "axes": {
+          "x": "size of advantage",
+          "y": "number of ways to win"
+        },
+        "quadrants": [
+          "Specialization",
+          "Fragmented",
+          "Volume",
+          "Stalemate"
+        ]
+      },
+      "sections": [],
+      "why": "classify industries by how advantage is won"
+    },
+    {
+      "key": "generic-strategies",
+      "name": "Generic Strategies (Porter)",
+      "family": "Porter",
+      "type": "matrix",
+      "meta": {
+        "axes": {
+          "x": "cost → differentiation",
+          "y": "broad → narrow scope"
+        },
+        "quadrants": [
+          "Cost Leadership",
+          "Differentiation",
+          "Cost Focus",
+          "Differentiation Focus"
+        ]
+      },
+      "sections": [],
+      "why": "place strategic options by source and scope of advantage"
+    },
+    {
+      "key": "situational-leadership",
+      "name": "Situational Leadership",
+      "family": "Change / People",
+      "type": "matrix",
+      "meta": {
+        "axes": {
+          "x": "supportive behaviour",
+          "y": "directive behaviour"
+        },
+        "quadrants": [
+          "S1 Directing",
+          "S2 Coaching",
+          "S4 Delegating",
+          "S3 Supporting"
+        ]
+      },
+      "sections": [],
+      "why": "place people or teams by the leadership style they need"
+    },
+    {
+      "key": "scenario-planning",
+      "name": "Scenario Planning",
+      "family": "Risk / Uncertainty",
+      "type": "matrix",
+      "meta": {
+        "axes": {
+          "x": "uncertainty A",
+          "y": "uncertainty B"
+        },
+        "quadrants": [
+          "Scenario 1",
+          "Scenario 2",
+          "Scenario 3",
+          "Scenario 4"
+        ]
+      },
+      "sections": [],
+      "why": "sort signals or moves into four futures from two uncertainties"
+    },
+    {
+      "key": "custom-2x2",
+      "name": "Custom 2×2",
+      "family": "Decision / Prioritization",
+      "type": "matrix",
+      "meta": {
+        "axes": {
+          "x": "x axis",
+          "y": "y axis"
+        },
+        "quadrants": [
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4"
+        ]
+      },
+      "sections": [],
+      "why": "any two axes; rename quadrants and axes"
+    },
+    {
+      "key": "moscow",
+      "name": "MoSCoW",
+      "family": "Decision / Prioritization",
+      "type": "kanban",
+      "meta": {
+        "lanes": [
+          "Must",
+          "Should",
+          "Could",
+          "Won't"
+        ]
+      },
+      "sections": [],
+      "why": "sort requirements into must/should/could/won't"
+    },
+    {
+      "key": "kano",
+      "name": "Kano Model",
+      "family": "Decision / Prioritization",
+      "type": "kanban",
+      "meta": {
+        "lanes": [
+          "Must-be",
+          "Performance",
+          "Attractive",
+          "Indifferent",
+          "Reverse"
+        ]
+      },
+      "sections": [],
+      "why": "sort features by how they affect satisfaction"
+    },
+    {
+      "key": "errc",
+      "name": "Blue Ocean / ERRC",
+      "family": "Innovation / Strategy",
+      "type": "kanban",
+      "meta": {
+        "lanes": [
+          "Eliminate",
+          "Reduce",
+          "Raise",
+          "Create"
+        ]
+      },
+      "sections": [],
+      "why": "sort factors into eliminate/reduce/raise/create"
+    },
+    {
+      "key": "cynefin",
+      "name": "Cynefin",
+      "family": "Systems",
+      "type": "kanban",
+      "meta": {
+        "lanes": [
+          "Clear",
+          "Complicated",
+          "Complex",
+          "Chaotic",
+          "Confused"
+        ]
+      },
+      "sections": [],
+      "why": "sort problems by the kind of system they live in"
+    },
+    {
+      "key": "pestle",
+      "name": "PESTLE",
+      "family": "Classics",
+      "type": "kanban",
+      "meta": {
+        "lanes": [
+          "Political",
+          "Economic",
+          "Social",
+          "Technological",
+          "Legal",
+          "Environmental"
+        ]
+      },
+      "sections": [],
+      "why": "sort external forces by kind"
+    },
+    {
+      "key": "three-horizons",
+      "name": "Three Horizons of Growth",
+      "family": "McKinsey lineage",
+      "type": "kanban",
+      "meta": {
+        "lanes": [
+          "H1 Core",
+          "H2 Emerging",
+          "H3 Options"
+        ]
+      },
+      "sections": [],
+      "why": "sort initiatives by time horizon"
+    },
+    {
+      "key": "three-box",
+      "name": "Three Box Solution",
+      "family": "Innovation / Strategy",
+      "type": "kanban",
+      "meta": {
+        "lanes": [
+          "Box 1 Manage the present",
+          "Box 2 Forget the past",
+          "Box 3 Create the future"
+        ]
+      },
+      "sections": [],
+      "why": "sort work into the three boxes"
+    },
+    {
+      "key": "4ps",
+      "name": "4 Ps",
+      "family": "Marketing / Customer",
+      "type": "kanban",
+      "meta": {
+        "lanes": [
+          "Product",
+          "Price",
+          "Place",
+          "Promotion"
+        ]
+      },
+      "sections": [],
+      "why": "sort marketing decisions by lever"
+    },
+    {
+      "key": "aarrr",
+      "name": "AARRR Pirate Metrics",
+      "family": "Marketing / Customer",
+      "type": "kanban",
+      "meta": {
+        "lanes": [
+          "Acquisition",
+          "Activation",
+          "Retention",
+          "Referral",
+          "Revenue"
+        ]
+      },
+      "sections": [],
+      "why": "sort ideas or metrics by funnel stage"
+    },
+    {
+      "key": "fishbone",
+      "name": "Fishbone / Ishikawa",
+      "family": "Root cause",
+      "type": "kanban",
+      "meta": {
+        "lanes": [
+          "Methods",
+          "Machines",
+          "Materials",
+          "Measurements",
+          "Environment",
+          "People"
+        ]
+      },
+      "sections": [],
+      "why": "sort candidate causes into categories"
+    },
+    {
+      "key": "lean-wastes",
+      "name": "Lean 7 Wastes",
+      "family": "Process / Operations",
+      "type": "kanban",
+      "meta": {
+        "lanes": [
+          "Transport",
+          "Inventory",
+          "Motion",
+          "Waiting",
+          "Overproduction",
+          "Overprocessing",
+          "Defects",
+          "Skills"
+        ]
+      },
+      "sections": [],
+      "why": "sort observations by waste type"
+    },
+    {
+      "key": "3cs",
+      "name": "3C's",
+      "family": "McKinsey lineage",
+      "type": "kanban",
+      "meta": {
+        "lanes": [
+          "Customer",
+          "Competitor",
+          "Company"
+        ]
+      },
+      "sections": [],
+      "why": "sort facts by which C they describe"
+    },
+    {
+      "key": "weighted-scoring",
+      "name": "Weighted Scoring",
+      "family": "Decision / Prioritization",
+      "type": "score",
+      "meta": {
+        "criteria": [
+          "criterion 1",
+          "criterion 2",
+          "criterion 3"
+        ],
+        "dropped": []
+      },
+      "sections": [],
+      "why": "compare options on named criteria; rename the criteria"
+    },
+    {
+      "key": "rice",
+      "name": "RICE",
+      "family": "Decision / Prioritization",
+      "type": "score",
+      "meta": {
+        "criteria": [
+          "reach",
+          "impact",
+          "confidence",
+          "effort"
+        ],
+        "dropped": []
+      },
+      "sections": [],
+      "why": "score ideas by reach, impact, confidence, effort"
+    },
+    {
+      "key": "ice",
+      "name": "ICE",
+      "family": "Decision / Prioritization",
+      "type": "score",
+      "meta": {
+        "criteria": [
+          "impact",
+          "confidence",
+          "ease"
+        ],
+        "dropped": []
+      },
+      "sections": [],
+      "why": "score ideas by impact, confidence, ease"
+    },
+    {
+      "key": "wsjf",
+      "name": "WSJF",
+      "family": "Decision / Prioritization",
+      "type": "score",
+      "meta": {
+        "criteria": [
+          "business value",
+          "time criticality",
+          "risk reduction",
+          "job size"
+        ],
+        "dropped": []
+      },
+      "sections": [],
+      "why": "score jobs by cost of delay over size"
+    },
+    {
+      "key": "cost-of-delay",
+      "name": "Cost of Delay",
+      "family": "Decision / Prioritization",
+      "type": "score",
+      "meta": {
+        "criteria": [
+          "value",
+          "urgency",
+          "risk reduction"
+        ],
+        "dropped": []
+      },
+      "sections": [],
+      "why": "score work by what waiting costs"
+    },
+    {
+      "key": "risk-matrix",
+      "name": "Risk Matrix",
+      "family": "Risk / Uncertainty",
+      "type": "score",
+      "meta": {
+        "criteria": [
+          "likelihood",
+          "impact"
+        ],
+        "dropped": []
+      },
+      "sections": [],
+      "why": "score risks by likelihood and impact"
+    },
+    {
+      "key": "raci",
+      "name": "RACI",
+      "family": "Decision / Prioritization",
+      "type": "score",
+      "meta": {
+        "criteria": [
+          "person 1",
+          "person 2",
+          "person 3"
+        ],
+        "dropped": []
+      },
+      "sections": [],
+      "why": "tasks as rows, people as columns, cells R/A/C/I"
+    },
+    {
+      "key": "strategy-canvas",
+      "name": "Strategy Canvas",
+      "family": "Innovation / Strategy",
+      "type": "score",
+      "meta": {
+        "criteria": [
+          "factor 1",
+          "factor 2",
+          "factor 3"
+        ],
+        "dropped": []
+      },
+      "sections": [],
+      "why": "rate offerings on competing factors"
+    },
+    {
+      "key": "pareto",
+      "name": "Pareto / 80-20",
+      "family": "Decision / Prioritization",
+      "type": "rank",
+      "meta": {},
+      "sections": [],
+      "why": "rank causes or items by share of effect (score:: field)"
+    },
+    {
+      "key": "pre-mortem",
+      "name": "Pre-mortem",
+      "family": "Risk / Uncertainty",
+      "type": "triage",
+      "meta": {
+        "actions": {
+          "1": "likely",
+          "2": "possible",
+          "3": "unlikely"
+        }
+      },
+      "sections": [],
+      "why": "sort imagined failure causes by likelihood"
+    },
+    {
+      "key": "real-options",
+      "name": "Real Options",
+      "family": "Risk / Uncertainty",
+      "type": "compare",
+      "meta": {
+        "visible": 3
+      },
+      "sections": [],
+      "why": "lay options side by side with their milestones and triggers"
+    },
+    {
+      "key": "decision-tree",
+      "name": "Expected Value / Decision Tree",
+      "family": "Decision / Prioritization",
+      "type": "compare",
+      "meta": {
+        "visible": 3
+      },
+      "sections": [],
+      "why": "compare branches with outcomes and odds as fields"
+    },
+    {
+      "key": "issue-tree",
+      "name": "Issue Tree / Logic Tree",
+      "family": "McKinsey lineage",
+      "type": "graph",
+      "meta": {},
+      "sections": [],
+      "why": "break a question into sub-questions"
+    },
+    {
+      "key": "hypothesis-tree",
+      "name": "Hypothesis Tree",
+      "family": "McKinsey lineage",
+      "type": "graph",
+      "meta": {},
+      "sections": [],
+      "why": "break a hypothesis into testable parts"
+    },
+    {
+      "key": "fault-tree",
+      "name": "Fault Tree Analysis",
+      "family": "Root cause",
+      "type": "graph",
+      "meta": {},
+      "sections": [],
+      "why": "trace a failure to its causes"
+    },
+    {
+      "key": "causal-loop",
+      "name": "Causal Loop Diagram",
+      "family": "Systems",
+      "type": "graph",
+      "meta": {},
+      "sections": [],
+      "why": "map causes and feedback loops"
+    }
+  ]
+}
