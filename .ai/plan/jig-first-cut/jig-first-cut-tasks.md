@@ -11,6 +11,6 @@
 - [ ] wave 1: qa, compare, score, rank, rerank, kanban, venn, exec
 - [ ] wave 2: compose, transcript, graph, breadboard
 - [ ] wave 3: triage media, tag, gate, duel, tour, explore
-- [ ] router: frameworks map + jig new
+- [x] router: frameworks map + jig new
 - [ ] /jig skill
 - [ ] shape-board retirement (Sean confirms)

@@ -53,3 +53,4 @@ details > summary { cursor: pointer; color: var(--dim); }
 .notebar input { flex: 1; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--edge); border-radius: var(--r); padding: 4px 8px; }
 .jig-esc { color: var(--bad); font-size: 12px; margin-left: 8px; }
 .jig-note { color: var(--info); font-size: 13px; margin-top: 4px; white-space: pre-wrap; }
+.notebar[hidden] { display: none; }
