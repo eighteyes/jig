@@ -1,43 +1,82 @@
 # Jig: first-cut plan
 
-Built from `SPEC.md`. The build waits on the four Open decisions; each one is on Sean's cactus board (thread `open`). The defaults below are my picks if he skips one.
+Jig is the go-to for ephemeral decision interfaces. It takes over shape-board (its boards get ported) and decompose (its framework atlas becomes jig's router). Sean's calls are in cactus thread `open`.
 
-## Shape
+## Decided
 
-- **A jig is one markdown file.** Frontmatter declares the type and actions; the body holds the data.
-- **The body is the result.** Sorting rewrites the file's lines, so the agent reads the same file back when it's done. No result store, no extra format.
-- **Done means `status: done`.** The host stops rendering it. History is git.
-- **Views are standalone ES modules.** One per type, plain DOM, no build step, no framework, so any slate site can import them.
-- **A dev host serves a folder of jigs** until slate's site exists. It only serves views and writes files back.
+- **One jig is one markdown file.** Frontmatter declares the type; the body holds the data. (q3)
+- **The file is the result.** Each action rewrites it, and finishing sets `status: done`. (q2)
+- **Results come out two ways.** The file is the record, and `jig open` also prints a JSON summary on stdout. (q9)
+- **Each jig opens in its own local dark tab for now.** Views are plain ES modules that slate imports later. (q10)
+- **Fresh code:** Node built-ins and plain JS, no build, no dependencies. (q12)
+- **Port every shape-board board** into jig, then retire shape-board. (q7, q11)
+- **board-live is dropped.** SHAPE-demo is a demo page, not a board. (q15)
+- **decompose's atlas becomes a router.** A framework maps to a jig type with its labels pre-filled. (q8)
+- **Port order:** decision shapes first, media last. (q16)
 
-## Example file (default for "how a jig declares itself")
+## File conventions
 
 ```
 ---
-jig: triage
-status: open
-actions: { 1: accept, 2: reject, 3: later }
+jig: <type>
+title: ...
+status: open | done
+<type options>
 ---
-- the first item
-- [accept] an item already sorted
+Intro prose.
+## Section
+key:: value          section field
+- [label] item text
+  key:: value        item field (Obsidian inline-field syntax)
+  free note line
 ```
 
-A matrix is four `##` headings plus an `## Unsorted` pile, one list item per card.
+- `label` is the item's main decision (accept, a quadrant, approve).
+- Fields hold everything else: `note`, `escalate`, `tags`, `audio`, `img`, `video`, scores.
+- Every view gets the same two keys: `e` escalates and `c` adds a note. The note opens as an inline field, never a prompt dialog.
 
-## First cut
+## Board → jig type
 
-1. File format: parse and write frontmatter plus list items, round-trip safe.
-2. Matrix view: four quadrants and a pile, drag a card, writes on drop.
-3. Triage view: one card, keys from `actions`, `u` to undo, advances itself, writes each press.
-4. Dev host: list open jigs, mount one inline, POST writes back. Dark mode.
-5. Tests for the format and the write-back.
+```
+shape-board             jig type    file shape
+quad-board              matrix      4 quadrant sections + Unsorted          (built)
+grid-board (+img,video) triage      items, label = column; media fields     (built, media to add)
+board                   qa          ## question, items = choices, [x] = picked
+path-board              compare     ## path, prose = thesis, items = milestones
+matrix-board            score       items = options, one field per criterion
+leaderboard-board       rank        items in order with score fields; keep/cut/promote
+delta-board             rerank      items in human order, guess:: = model rank
+kanban-board            kanban      ## lane sections, Inbox first
+venn-board              venn        A only / B only / Both / Neither + Unsorted
+exec-board              exec        items = commands; approve/reject; nothing runs
+fragment-board          compose     ordered items; strike, tags, agents fields
+transcript-board        transcript  items = turns, role:: field, mark label
+know-viz                graph       items with id, type, depends fields
+breadboard-board        breadboard  ## place sections, nodes with wires field
+tag-board (+video)      tag         tags:: field, leader-key tag entry
+gate-board              gate        audio:: candidates, passed/crown fields
+duel-board              duel        rating fields, ## Votes log
+tour-board (+standalone) tour       values fields, projections in frontmatter
+voice-explorer          explore     values fields, thresholds, in-page ranking
+```
 
-## Out of the first cut
+## Build
 
-- Phone swipe deck (the named-action design leaves room for it).
-- Tiny inline yes/no without a file.
-- Removing the embed line from slate (slate doesn't exist yet).
+1. Shared pieces: item and section fields in the format, shared `e`/`c` keys with inline notes, the JSON summary, a headless browser test helper.
+2. Port in waves, decision shapes first: qa, compare, score, rank, rerank, kanban, venn, exec.
+3. Next: compose, transcript, graph, breadboard.
+4. Media last: triage media, tag, gate, duel, tour, explore.
+5. Router: decompose frameworks map to a type, its pre-filled labels and sections; `jig new <framework|type> FILE` writes the skeleton.
+6. The /jig skill: when to reach for a jig, how to pick a type, the run loop, how to read the result.
+7. Shape-board retires once Sean confirms jig covers his use.
+
+## Not in this cut
+
+- Phone swipe deck. Named actions leave room for it.
+- Tiny inline yes/no with no file.
+- Mounting on slate (slate is spec only).
+- board-live's live depth.
 
 ## Grade
 
-B: the shape follows the spec, but four decisions are open. It goes up to A once Sean answers.
+B+. The conventions and the first two views are proven. The risk is breadth: 18 views, and the media ones are large.
