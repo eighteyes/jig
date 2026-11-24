@@ -4,6 +4,6 @@
   "description": "Ephemeral work surfaces for human judgment",
   "type": "module",
   "bin": { "jig": "bin/jig.mjs" },
-  "scripts": { "test": "node --test" },
+  "scripts": { "test": "node --test test/*.test.mjs" },
   "engines": { "node": ">=20" }
 }

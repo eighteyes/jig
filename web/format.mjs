@@ -135,39 +135,88 @@ export function splitFile(text) {
 
 const ITEM = /^- (?:\[([^\]]*)\] )?(.*)$/;
 const HEAD = /^(#{2,6}) (.*)$/;
+const FIELD = /^([A-Za-z_][\w.-]*):: ?(.*)$/;
+
+export function newSection(heading, level = 2) {
+  return { heading, level, fields: {}, text: [], items: [], after: [] };
+}
+
+export function newItem(text, label = null, fields = {}) {
+  return { label, text, fields: { ...fields }, note: [], trail: [] };
+}
 
 /**
  * Parse a body into { intro, sections }.
- * sections: [{ heading, level, items: [{ label, text, note }], after }]
- * The first section has heading null when items come before any heading.
- * `after` keeps non-item lines that follow a section's items, so prose survives a round trip.
+ *
+ * section: { heading, level, fields, text, items, after }
+ *   heading  null for items before any heading; undefined for a continuation after prose
+ *   fields   `key:: value` lines right under the heading
+ *   text     prose between the heading (and fields) and the first item
+ *   after    lines after the items, kept for the round trip
+ * item: { label, text, fields, note, trail }
+ *   fields   indented `key:: value` lines (Obsidian inline-field syntax), values are strings
+ *   note     other indented lines
+ *   trail    blank lines between this item and the next
+ *
+ * Writing puts an item's fields before its note lines.
  */
 export function parseBody(body) {
   const lines = body.split('\n');
   const intro = [];
   const sections = [];
   let cur = null;
+  let phase = 'head'; // head -> text -> items -> after
   for (const line of lines) {
     const h = line.match(HEAD);
-    if (h) { cur = { heading: h[2].trim(), level: h[1].length, items: [], after: [] }; sections.push(cur); continue; }
+    if (h) { cur = newSection(h[2].trim(), h[1].length); sections.push(cur); phase = 'head'; continue; }
     const m = line.match(ITEM);
     if (m) {
-      if (!cur) { cur = { heading: null, level: 2, items: [], after: [] }; sections.push(cur); }
-      if (cur.after.length && cur.after.some((l) => l.trim())) {
-        // prose between items: start an unnamed continuation so order is kept
-        cur = { heading: undefined, level: cur.level, items: [], after: [] };
-        sections.push(cur);
-      } else cur.after = [];
-      cur.items.push({ label: m[1] ?? null, text: m[2], note: [] });
+      if (!cur) { cur = newSection(null); sections.push(cur); }
+      if (phase === 'after') {
+        if (cur.after.some((l) => l.trim())) {
+          cur = newSection(undefined, cur.level);
+          sections.push(cur);
+        } else {
+          cur.items[cur.items.length - 1].trail.push(...cur.after);
+          cur.after = [];
+        }
+      }
+      phase = 'items';
+      cur.items.push(newItem(m[2], m[1] ?? null));
       continue;
     }
-    if (cur && cur.items.length && /^\s+\S/.test(line) && !cur.after.length) {
-      cur.items[cur.items.length - 1].note.push(line.replace(/^\s{1,4}/, ''));
+    if (!cur) { intro.push(line); continue; }
+    if (phase === 'items' && /^\s+\S/.test(line)) {
+      const it = cur.items[cur.items.length - 1];
+      const inner = line.replace(/^\s{1,4}/, '');
+      const f = inner.match(FIELD);
+      if (f && !it.note.length) it.fields[f[1]] = f[2];
+      else it.note.push(inner);
       continue;
     }
-    if (cur) cur.after.push(line); else intro.push(line);
+    if (phase === 'head') {
+      const f = line.match(FIELD);
+      if (f) { cur.fields[f[1]] = f[2]; continue; }
+      phase = 'text';
+    }
+    if (phase === 'text') { cur.text.push(line); continue; }
+    phase = 'after';
+    cur.after.push(line);
   }
+  // A section with no items: its text sits where `after` would, so items added later go above it.
+  for (const sec of sections) if (!sec.items.length && sec.text.length) { sec.after = [...sec.text, ...sec.after]; sec.text = []; }
   return { intro: intro.join('\n'), sections };
+}
+
+export function writeItem(it) {
+  const out = [`- ${it.label !== null && it.label !== undefined && it.label !== '' ? `[${it.label}] ` : ''}${it.text}`];
+  for (const [k, v] of Object.entries(it.fields || {})) {
+    if (v === undefined || v === null) continue;
+    out.push(`  ${k}:: ${v}`);
+  }
+  for (const n of it.note || []) out.push(n ? `  ${n}` : '');
+  out.push(...(it.trail || []));
+  return out;
 }
 
 export function writeBody({ intro, sections }) {
@@ -175,10 +224,9 @@ export function writeBody({ intro, sections }) {
   if (intro) out.push(intro);
   for (const s of sections) {
     if (s.heading) out.push(`${'#'.repeat(s.level || 2)} ${s.heading}`);
-    for (const it of s.items) {
-      out.push(`- ${it.label !== null && it.label !== undefined ? `[${it.label}] ` : ''}${it.text}`);
-      for (const n of it.note || []) out.push(n ? `  ${n}` : '');
-    }
+    for (const [k, v] of Object.entries(s.fields || {})) if (v !== undefined && v !== null) out.push(`${k}:: ${v}`);
+    out.push(...(s.text || []));
+    for (const it of s.items) out.push(...writeItem(it));
     out.push(...(s.after || []));
   }
   return out.join('\n');
@@ -199,4 +247,52 @@ export function writeJig({ meta, intro, sections }) {
 /** Every item across sections, with its section heading. */
 export function allItems(jig) {
   return jig.sections.flatMap((s) => s.items.map((it) => ({ ...it, section: s.heading ?? null })));
+}
+
+/** A field read as a list: "a, b" -> ['a', 'b']. */
+export function fieldList(obj, key) {
+  const v = obj?.fields?.[key];
+  if (v === undefined || v === null || String(v).trim() === '') return [];
+  return String(v).split(',').map((x) => x.trim()).filter(Boolean);
+}
+
+/** A field read as a number, or null. */
+export function fieldNumber(obj, key) {
+  const v = Number(obj?.fields?.[key]);
+  return obj?.fields?.[key] !== undefined && Number.isFinite(v) ? v : null;
+}
+
+/** Set or clear a field; falsy-but-zero values clear it. */
+export function setField(obj, key, value) {
+  obj.fields ||= {};
+  if (value === undefined || value === null || value === false || value === '' || (Array.isArray(value) && !value.length)) delete obj.fields[key];
+  else obj.fields[key] = Array.isArray(value) ? value.join(', ') : String(value);
+}
+
+/**
+ * Generic JSON summary of a jig, printed by `jig open` on finish.
+ * Views may add type-specific keys through an exported summary(jig).
+ */
+export function summarize(jig) {
+  const by_label = {};
+  const sections = jig.sections.filter((s) => s.heading !== undefined || s.items.length).map((s) => ({
+    heading: s.heading ?? null,
+    fields: s.fields,
+    text: (s.text || []).join('\n').trim() || undefined,
+    items: s.items.map((it) => {
+      if (it.label) (by_label[it.label] ||= []).push(it.text);
+      return { label: it.label, text: it.text, fields: it.fields, note: it.note.length ? it.note.join('\n') : undefined };
+    }),
+  }));
+  const items = allItems(jig).map((it) => ({ section: it.section, label: it.label, text: it.text, fields: it.fields }));
+  return {
+    type: jig.meta.jig ?? null,
+    title: jig.meta.title ?? null,
+    status: jig.meta.status ?? null,
+    sections,
+    items,
+    by_label,
+    unlabelled: items.filter((it) => !it.label).map((it) => it.text),
+    escalated: items.filter((it) => it.fields.escalate).map((it) => it.text),
+  };
 }

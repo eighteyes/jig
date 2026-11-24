@@ -55,7 +55,7 @@ test('body parses into sections and items', () => {
   assert.equal(j.meta.jig, 'matrix');
   assert.equal(j.intro, 'Sort the backlog.\n');
   assert.deepEqual(j.sections.map((s) => s.heading), ['Unsorted', 'Do', 'Drop']);
-  assert.deepEqual(j.sections[0].items[1], { label: null, text: 'fix login', note: ['it breaks on Safari'] });
+  assert.deepEqual(j.sections[0].items[1], { label: null, text: 'fix login', fields: {}, note: ['it breaks on Safari'], trail: [] });
   assert.equal(j.sections[1].items[0].label, 'x');
   assert.equal(allItems(j).length, 3);
 });
@@ -82,4 +82,38 @@ test('file without frontmatter', () => {
   const j = parseJig('- one\n- [ok] two');
   assert.deepEqual(j.meta, {});
   assert.equal(writeJig(j), '- one\n- [ok] two');
+});
+
+test('item and section fields, section text, blank lines between items', () => {
+  const text = [
+    '## Path A',
+    'grade:: B',
+    'Ship the small thing first.',
+    '',
+    '- [x] milestone one',
+    '  note:: needs a review',
+    '  escalate:: true',
+    '  a free note',
+    '',
+    '- milestone two',
+    '',
+  ].join('\n');
+  const j = parseJig(text);
+  const s = j.sections[0];
+  assert.deepEqual(s.fields, { grade: 'B' });
+  assert.deepEqual(s.text, ['Ship the small thing first.', '']);
+  assert.deepEqual(s.items[0].fields, { note: 'needs a review', escalate: 'true' });
+  assert.deepEqual(s.items[0].note, ['a free note']);
+  assert.equal(s.items.length, 2);
+  assert.equal(writeJig(j), text);
+});
+
+test('summarize lists labels, unlabelled and escalated items', async () => {
+  const { summarize } = await import('../web/format.mjs');
+  const j = parseJig('---\njig: triage\n---\n- [accept] a\n- b\n  escalate:: true\n- [accept] c');
+  const s = summarize(j);
+  assert.equal(s.type, 'triage');
+  assert.deepEqual(s.by_label, { accept: ['a', 'c'] });
+  assert.deepEqual(s.unlabelled, ['b']);
+  assert.deepEqual(s.escalated, ['b']);
 });

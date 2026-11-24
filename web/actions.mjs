@@ -52,6 +52,8 @@ export function createActions(target = document) {
     bind,
     run,
     undo,
+    /** Push an inverse made outside run() (e.g. an inline editor) onto the undo stack. */
+    push: (inverse) => { if (typeof inverse === 'function') history.push(inverse); },
     bindings: () => [...keys.entries()].map(([key, name]) => ({ key, name, title: titles.get(name) ?? name })),
     /** Bindings grouped by action, in bind order: [{ keys: [..], name, title }]. */
     legend: () => {

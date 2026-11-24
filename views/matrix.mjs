@@ -18,24 +18,20 @@
 //   ## Unsorted
 //   - item
 
-const PILE = /^unsorted$/i;
+import { el, badges } from '../web/ui.mjs';
+import { newSection } from '../web/format.mjs';
 
-function el(tag, cls, text) {
-  const e = document.createElement(tag);
-  if (cls) e.className = cls;
-  if (text !== undefined) e.textContent = text;
-  return e;
-}
+const PILE = /^unsorted$/i;
 
 /** Find or create the pile and four quadrant sections in jig.sections. */
 export function layout(jig) {
   let pile = jig.sections.find((s) => s.heading === null || (s.heading && PILE.test(s.heading)));
-  if (!pile) { pile = { heading: 'Unsorted', level: 2, items: [], after: [] }; jig.sections.push(pile); }
+  if (!pile) { pile = newSection('Unsorted'); jig.sections.push(pile); }
   if (pile.heading === null) pile.heading = 'Unsorted';
   const quads = jig.sections.filter((s) => s !== pile && s.heading).slice(0, 4);
   const names = Array.isArray(jig.meta.quadrants) ? jig.meta.quadrants : ['Do', 'Schedule', 'Delegate', 'Drop'];
   while (quads.length < 4) {
-    const s = { heading: String(names[quads.length] ?? `Q${quads.length + 1}`), level: 2, items: [], after: [] };
+    const s = newSection(String(names[quads.length] ?? `Q${quads.length + 1}`));
     jig.sections.splice(jig.sections.indexOf(pile), 0, s);
     quads.push(s);
   }
@@ -80,6 +76,7 @@ export function mount(root, ctx) {
     c.draggable = true;
     c.append(el('div', null, item.text));
     if (item.note.length) c.append(el('div', 'note', item.note.join('\n')));
+    c.append(...badges(item));
     c.addEventListener('click', () => { focus = { area: areaIdx, index: i }; render(); });
     c.addEventListener('dragstart', (e) => { drag = { area: areaIdx, index: i }; e.dataTransfer.effectAllowed = 'move'; });
     return c;
@@ -151,4 +148,5 @@ export function mount(root, ctx) {
     u: 'undo', Enter: 'finish',
   });
   render();
+  return { current: () => areas[focus.area].items[focus.index] ?? null, render };
 }

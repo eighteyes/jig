@@ -16,12 +16,7 @@
 const DEFAULT_ACTIONS = { 1: 'accept', 2: 'reject', 3: 'later' };
 const RESERVED = new Set(['u', 'Enter', 'ArrowLeft', 'ArrowRight', 'j', 'k']);
 
-function el(tag, cls, text) {
-  const e = document.createElement(tag);
-  if (cls) e.className = cls;
-  if (text !== undefined) e.textContent = text;
-  return e;
-}
+import { el, badges } from '../web/ui.mjs';
 
 export function mount(root, ctx) {
   const { jig, actions } = ctx;
@@ -73,6 +68,7 @@ export function mount(root, ctx) {
       if (it.label !== null) card.append(el('span', 'label', it.label));
       card.append(el('div', null, it.text));
       if (it.note.length) card.append(el('div', 'note', it.note.join('\n')));
+      card.append(...badges(it));
     } else card.append(el('div', null, 'No items.'));
     finishLine.textContent = left === 0 && items.length ? 'All decided. Press Enter to finish.' : '';
 
@@ -111,4 +107,5 @@ export function mount(root, ctx) {
   }
   actions.bind({ ...bindings, ArrowRight: 'next', j: 'next', ArrowLeft: 'back', k: 'back', u: 'undo', Enter: 'finish' });
   render();
+  return { current: () => items[pos] ?? null, render };
 }

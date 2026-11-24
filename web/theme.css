@@ -47,3 +47,9 @@ details > summary { cursor: pointer; color: var(--dim); }
 .status.saved { color: var(--good); }
 .status.error { color: var(--bad); }
 .done-banner { padding: 40px; text-align: center; color: var(--dim); }
+
+.notebar { position: fixed; bottom: 38px; left: 0; right: 0; background: var(--raised); border-top: 1px solid var(--accent); padding: 8px 20px; display: flex; gap: 12px; align-items: center; }
+.notebar span { color: var(--dim); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40%; }
+.notebar input { flex: 1; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--edge); border-radius: var(--r); padding: 4px 8px; }
+.jig-esc { color: var(--bad); font-size: 12px; margin-left: 8px; }
+.jig-note { color: var(--info); font-size: 13px; margin-top: 4px; white-space: pre-wrap; }

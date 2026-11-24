@@ -96,5 +96,5 @@ export async function startHost(jigPath, opts = {}) {
     server.listen(opts.port ?? 0, '127.0.0.1', resolve);
   });
   const { port } = server.address();
-  return { url: `http://127.0.0.1:${port}/`, done, close: () => server.close() };
+  return { url: `http://127.0.0.1:${port}/`, done, close: () => { server.close(); server.closeAllConnections(); } };
 }

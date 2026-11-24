@@ -7,9 +7,12 @@
 //
 // View contract: export function mount(el, ctx) where ctx is
 //   { jig, meta, save(jig), finish(jig), actions, legend(extra?) }
+// and mount returns { current(): item|null, render() }.
 // A view mutates ctx.jig and calls save; finish sets status: done and releases the host.
+// With current() present, the app adds e (escalate) and c (inline note) for the current item.
+// A view may also export summary(jig) for type-specific keys in the JSON printed on finish.
 
-import { parseJig, writeJig } from './format.mjs';
+import { parseJig, writeJig, setField } from './format.mjs';
 import { createActions } from './actions.mjs';
 
 const $ = (id) => document.getElementById(id);
@@ -85,7 +88,55 @@ async function main() {
 
   const actions = createActions();
   const ctx = { jig, meta: jig.meta, save, finish, actions, legend: (extra) => drawLegend(actions, extra) };
-  view.mount(mount, ctx);
+  const handle = view.mount(mount, ctx) || {};
+  const current = () => handle.current?.() ?? null;
+  const rerender = () => handle.render?.();
+
+  // Shared on every view: e escalates the current item, c writes a note on it.
+  if (handle.current) {
+    actions.define('escalate', async () => {
+      const it = current();
+      if (!it) return;
+      const before = it.fields.escalate;
+      setField(it, 'escalate', before ? null : 'true');
+      rerender();
+      await save();
+      return async () => { setField(it, 'escalate', before); rerender(); await save(); };
+    }, 'escalate');
+    actions.define('note', () => openNote(current(), async (it, before) => {
+      rerender();
+      await save();
+      return async () => { setField(it, 'note', before); rerender(); await save(); };
+    }), 'note');
+    const taken = new Set(actions.legend().flatMap((g) => g.keys));
+    const extra = {};
+    if (!taken.has('e')) extra.e = 'escalate';
+    if (!taken.has('c')) extra.c = 'note';
+    actions.bind(extra);
+  }
+
+  // Inline note bar: opens above the legend, Enter saves, Escape cancels. No dialog.
+  function openNote(it, after) {
+    if (!it) return;
+    const bar = $('notebar');
+    const input = bar.querySelector('input');
+    bar.querySelector('span').textContent = `note on: ${it.text}`;
+    input.value = it.fields.note || '';
+    bar.hidden = false;
+    input.focus();
+    input.onkeydown = async (e) => {
+      if (e.key === 'Escape') { input.blur(); bar.hidden = true; return; }
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      const before = it.fields.note;
+      setField(it, 'note', input.value.trim());
+      input.blur();
+      bar.hidden = true;
+      const undo = await after(it, before);
+      actions.push?.(undo);
+    };
+  }
+
   drawLegend(actions);
   setStatus('ready');
 }
