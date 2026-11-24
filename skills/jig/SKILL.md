@@ -49,19 +49,31 @@ Every view shares two keys: `e` escalates the focused thing, and `c` writes a no
 ## Types
 
 ```
-matrix      2x2 + Unsorted pile; 1-4 place, 0 unplace
-triage      one card at a time; keys from `actions`
-qa          ## question, items = choices; 1-9 pick, w custom answer
-compare     ## path columns, milestones; space strike, x strike path
-score       options x criteria (meta criteria); strike cells, options, criteria
-rank        scored list; keep / cut / promote
-rerank      model order vs human order; Shift+arrows move
-kanban      ## lanes, Inbox first; 0-N move, d done, x delete, n add
-venn        two sets; a, b, i (both), n (neither)
-exec        commands to approve or reject; nothing runs from the page
+decide
+  triage      one card at a time, one key per decision; media, multi-label
+  matrix      2x2 + Unsorted pile; 1-4 place, 0 unplace
+  venn        two sets: a, b, i (both), n (neither)
+  kanban      ## lanes, Inbox first; 0-N move, d done, x delete, n add
+  qa          ## question, items = choices; 1-9 pick, w custom answer
+  exec        commands to approve or reject; nothing runs from the page
+compare and weigh
+  compare     ## path columns with milestones; strike milestones or paths
+  score       options x criteria; strike cells, options, criteria
+  rank        scored list; keep / cut / promote
+  rerank      model order vs your order; Shift+arrows move
+  duel        best-of-N rounds with ELO ratings
+  gate        rows of N candidates; pass the good, crown the best
+explore and mark
+  graph       nodes in columns by type or depth; flag, question deps
+  breadboard  places, affordances, wires (Shape Up)
+  compose     ordered prompt fragments; strike, tag, assign agents
+  transcript  a chat log; mark turns worth keeping
+  tag         open tag vocabulary by leader-key sequences
+  tour        n-dimensional points under a rotating 2-D projection
+  explore     scored items with media; thresholds, list/scatter, bouts
 ```
 
-Each view's header comment in `views/<type>.mjs` has its full file shape and keys.
+Media fields (`img::`, `audio::`, `video::`) are served from the jig file's folder, or from `jig open FILE --media DIR`. Each view's header comment in `views/<type>.mjs` has its full file shape and keys.
 
 ## Frameworks
 
