@@ -27,7 +27,12 @@ const KEY_NAMES = { ' ': 'space', ArrowUp: '↑', ArrowDown: '↓', ArrowLeft: '
 
 function drawLegend(actions, extra = []) {
   const el = $('legend');
-  const groups = [...actions.legend(), ...extra];
+  // An action titled '' folds its keys into the entry before it (1 2 3 … pick).
+  const groups = [];
+  for (const g of [...actions.legend(), ...extra]) {
+    if (g.title === '' && groups.length) groups[groups.length - 1] = { ...groups[groups.length - 1], keys: [...groups[groups.length - 1].keys, ...g.keys] };
+    else groups.push(g);
+  }
   el.hidden = groups.length === 0;
   el.replaceChildren(...groups.map(({ keys, title }) => {
     const span = document.createElement('span');
