@@ -14,7 +14,7 @@ export function createActions(target = document) {
 
   function define(name, fn, title) {
     handlers.set(name, fn);
-    if (title) titles.set(name, title);
+    if (title !== undefined && title !== null) titles.set(name, title);
     return api;
   }
 

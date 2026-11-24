@@ -30,7 +30,7 @@ function drawLegend(actions, extra = []) {
   // An action titled '' folds its keys into the entry before it (1 2 3 … pick).
   const groups = [];
   for (const g of [...actions.legend(), ...extra]) {
-    if (g.title === '' && groups.length) groups[groups.length - 1] = { ...groups[groups.length - 1], keys: [...groups[groups.length - 1].keys, ...g.keys] };
+    if (String(g.title).trim() === '' && groups.length) groups[groups.length - 1] = { ...groups[groups.length - 1], keys: [...groups[groups.length - 1].keys, ...g.keys] };
     else groups.push(g);
   }
   el.hidden = groups.length === 0;
